@@ -22,6 +22,9 @@ const NUM_EXPECTED_TRANSACTIONS: usize = 1000;
 /// Number of task threads we want to use when parsing transactions concurrently
 const NUM_TASK_THREADS: usize = 100;
 
+/// Custom result type
+pub type VybeResult<T> = Result<T, VybeDaemonError>;
+
 /// Wraps the Helium blochchain RPC service, and the Phoenix SDK onchain orderbook.
 #[derive(Getters)]
 pub struct VybeTradeFillExtractor {
@@ -71,10 +74,7 @@ impl VybeTradeFillExtractor {
     ///     }
     /// }
     /// ```
-    pub async fn new(
-        api_key: &str,
-        phoenix_addr: &str,
-    ) -> Result<Self, VybeDaemonError> {
+    pub async fn new(api_key: &str, phoenix_addr: &str) -> VybeResult<Self> {
         let url = format!("{HELIUS_RPC_ENDPOINT}{api_key}");
         let market_pubkey = Pubkey::try_from(phoenix_addr)?;
         match SDKClient::new(&Keypair::new(), url.as_str()).await {
@@ -92,7 +92,7 @@ impl VybeTradeFillExtractor {
     /// # Errors
     ///
     /// `TxExtractorError::EllipsisClient`
-    pub async fn run(&self) -> Result<(), VybeDaemonError> {
+    pub async fn run(&self) -> VybeResult<()> {
         info!("Extracting new fill events...");
         let signatures = self.get_signatures().await?;
         if signatures.len() < NUM_EXPECTED_TRANSACTIONS {
@@ -113,7 +113,7 @@ impl VybeTradeFillExtractor {
     }
 
     /// Get signatures
-    async fn get_signatures(&self) -> Result<Vec<Option<Signature>>, VybeDaemonError> {
+    async fn get_signatures(&self) -> VybeResult<Vec<Option<Signature>>> {
         debug!("Getting signatures...");
         Ok(self
             .sdk_client
@@ -156,7 +156,7 @@ impl VybeTradeFillExtractor {
     /// join handles concurrently to try and be as fast as possible.
     async fn extract_fill_events(
         handles: Vec<JoinHandle<Option<Vec<PhoenixEvent>>>>,
-    ) -> Result<Vec<PhoenixEvent>, VybeDaemonError> {
+    ) -> VybeResult<Vec<PhoenixEvent>> {
         let mut fill_events = Vec::new();
 
         // Create a stream that buffers up to N join handles concurrently.
