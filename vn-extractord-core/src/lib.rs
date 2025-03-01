@@ -159,8 +159,8 @@ impl VybeTradeFillExtractor {
     ) -> Result<Vec<PhoenixEvent>, VybeTradeFillExtractorError> {
         let mut fill_events = Vec::new();
 
-        // Create a stream that buffers up to 100 join handles concurrently.
-        let mut stream = futures::stream::iter(handles).buffer_unordered(NUM_TASK_THREADS);
+        // Create a stream that buffers up to N join handles concurrently.
+        let mut stream = futures::stream::iter(handles).buffered(NUM_TASK_THREADS);
 
         while let Some(join_result) = stream.next().await {
             let opt_events = join_result?;

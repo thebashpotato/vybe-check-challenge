@@ -61,7 +61,8 @@ async fn main() -> Result<()> {
     info!("Starting vybe-network extractor daemon");
 
     // Use the API key provided via the command line.
-    let vfe = VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS).await?;
+    let vfe =
+        VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS).await?;
     loop {
         if let Err(e) = vfe.run().await {
             error!("{e}");
