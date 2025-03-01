@@ -1,0 +1,19 @@
+[package]
+name = "vn-extractord"
+description = "Vibe Network Extractor Daemon Executable"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+vn-extractord-core = { path = "../vn-extractord-core" }
+
+[dev-dependencies]
+cargo-husky.workspace = true
+
+[lints]
+workspace = true

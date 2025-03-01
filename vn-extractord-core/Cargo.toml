@@ -1,0 +1,21 @@
+[package]
+name = "vn-extractord-core"
+description = "Implements core functionality for the daemon service as a rust static library"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+cargo-husky.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+crate-type = ["rlib"]
