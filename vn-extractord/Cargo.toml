@@ -11,6 +11,11 @@ license.workspace = true
 
 [dependencies]
 vn-extractord-core = { path = "../vn-extractord-core" }
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow = "1.0.96"
+clap = { version = "4.5.31", features = ["derive"] }
 
 [dev-dependencies]
 cargo-husky.workspace = true
