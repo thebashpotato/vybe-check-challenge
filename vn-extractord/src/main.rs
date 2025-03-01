@@ -8,10 +8,10 @@ use {
     vn_extractord_core::VybeTradeFillExtractor,
 };
 
-/// Phoenix Public Key for mainnet-beta
+/// Mainnet address of active SOL/USDC Market
 ///
-/// From <https://ellipsis-labs.gitbook.io/phoenix-dex/tRIkEFlLUzWK9uKO3W2V/getting-started/technical-overview>
-const PHOENIX_ADDRESS: &str = "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY";
+/// From <https://ellipsis-labs.gitbook.io/phoenix-dex/tRIkEFlLUzWK9uKO3W2V/getting-started/technical-overview/market-addresses>
+const PHOENIX_ADDRESS: &str = "4DoNfFBfF7UokCC2FQzriy7yHK6DY6NVdYpuekQ5pRgg";
 
 /// Simple cli implementation
 #[derive(Parser)]
@@ -41,6 +41,8 @@ async fn main() -> Result<()> {
     // Parse command line arguments.
     let args = Args::parse();
     let level = convert_log_level(&args.log_level);
+
+    // Filter out the noise from 3rd party libraries
     let filter = EnvFilter::builder()
         .with_default_directive(level.into())
         .from_env()?

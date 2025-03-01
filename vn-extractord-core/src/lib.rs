@@ -10,7 +10,7 @@ use {
     solana_sdk::{pubkey::Pubkey, signature::Signature, signer::keypair::Keypair},
     std::{str::FromStr, sync::Arc},
     tokio::task::JoinHandle,
-    tracing::{debug, info, warn},
+    tracing::{debug, error, info, warn},
 };
 
 //Fill {
@@ -113,8 +113,8 @@ impl VybeTradeFillExtractor {
         let handles = self.build_event_handles(signatures);
         let fill_events = Self::extract_fill_events(handles).await?;
 
+        info!("Recieved {} fill event(s)", fill_events.len());
         if !fill_events.is_empty() {
-            info!("Recieved {} fill event(s)", fill_events.len());
             for fill_event in fill_events {
                 println!("{fill_event:#?}");
             }
@@ -135,7 +135,10 @@ impl VybeTradeFillExtractor {
             .map(
                 |rpc_cts| match Signature::from_str(rpc_cts.signature.as_str()) {
                     Ok(sig) => Some(sig),
-                    Err(_) => None,
+                    Err(e) => {
+                        error!("Failed to parse a Signature: {e}");
+                        None
+                    }
                 },
             )
             .collect::<Vec<Option<Signature>>>())
