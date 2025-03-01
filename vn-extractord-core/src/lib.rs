@@ -13,17 +13,6 @@ use {
     tracing::{debug, error, info, warn},
 };
 
-//Fill {
-//       order_sequence_number: 18446744073706898246,
-//       maker: oneyMVfvJJE6niQgAyM6AecKVe8rLGSVJGZa8Yu3xYJ,
-//       taker: HV1KXxWFaSeriyFvXyx48FqG9BoFbfinB8njCJonqP7K,
-//       price_in_ticks: 99974,
-//       base_lots_filled: 296,
-//       base_lots_remaining: 254770,
-//       side_filled: Bid,
-//       is_full_fill: false,
-//   },
-
 /// Remote Procedure Call endpoint for Solana
 const HELIUS_RPC_ENDPOINT: &str = "https://mainnet.helius-rpc.com/?api-key=";
 

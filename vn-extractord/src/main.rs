@@ -11,7 +11,7 @@ use {
 /// Mainnet address of active SOL/USDC Market
 ///
 /// From <https://ellipsis-labs.gitbook.io/phoenix-dex/tRIkEFlLUzWK9uKO3W2V/getting-started/technical-overview/market-addresses>
-const PHOENIX_ADDRESS: &str = "4DoNfFBfF7UokCC2FQzriy7yHK6DY6NVdYpuekQ5pRgg";
+const PHOENIX_SOLUSDC_MARKET_ADDRESS: &str = "4DoNfFBfF7UokCC2FQzriy7yHK6DY6NVdYpuekQ5pRgg";
 
 /// Simple cli implementation
 #[derive(Parser)]
@@ -61,7 +61,7 @@ async fn main() -> Result<()> {
     info!("Starting vybe-network extractor daemon");
 
     // Use the API key provided via the command line.
-    let vfe = VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_ADDRESS).await?;
+    let vfe = VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS).await?;
     loop {
         if let Err(e) = vfe.run().await {
             error!("{e}");
