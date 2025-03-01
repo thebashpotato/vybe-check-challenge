@@ -4,6 +4,7 @@
 <br>
 <div align="center">
     <img alt="Crates.io" src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square">
+    <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/thebashpotato/vybe-check-challenge/rust.yml?style=flat-square&logo=ubuntu&label=Rust%20Build">
     <br>
     <p>Solana blockchain transaction extractor</p>
 </div>
