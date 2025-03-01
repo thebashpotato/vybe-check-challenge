@@ -4,7 +4,7 @@ pub mod error;
 
 use {
     derive_getters::Getters,
-    error::VybeTradeFillExtractorError,
+    error::VybeDaemonError,
     futures::StreamExt,
     phoenix_sdk::sdk_client::{MarketEventDetails, PhoenixEvent, SDKClient},
     solana_sdk::{pubkey::Pubkey, signature::Signature, signer::keypair::Keypair},
@@ -74,7 +74,7 @@ impl VybeTradeFillExtractor {
     pub async fn new(
         api_key: &str,
         phoenix_addr: &str,
-    ) -> Result<Self, VybeTradeFillExtractorError> {
+    ) -> Result<Self, VybeDaemonError> {
         let url = format!("{HELIUS_RPC_ENDPOINT}{api_key}");
         let market_pubkey = Pubkey::try_from(phoenix_addr)?;
         match SDKClient::new(&Keypair::new(), url.as_str()).await {
@@ -83,7 +83,7 @@ impl VybeTradeFillExtractor {
                 market_pubkey,
                 sdk_client: Arc::new(sdk_client),
             }),
-            Err(e) => Err(VybeTradeFillExtractorError::PhoenixClient(e.to_string())),
+            Err(e) => Err(VybeDaemonError::PhoenixClient(e.to_string())),
         }
     }
 
@@ -92,7 +92,7 @@ impl VybeTradeFillExtractor {
     /// # Errors
     ///
     /// `TxExtractorError::EllipsisClient`
-    pub async fn run(&self) -> Result<(), VybeTradeFillExtractorError> {
+    pub async fn run(&self) -> Result<(), VybeDaemonError> {
         info!("Extracting new fill events...");
         let signatures = self.get_signatures().await?;
         if signatures.len() < NUM_EXPECTED_TRANSACTIONS {
@@ -113,7 +113,7 @@ impl VybeTradeFillExtractor {
     }
 
     /// Get signatures
-    async fn get_signatures(&self) -> Result<Vec<Option<Signature>>, VybeTradeFillExtractorError> {
+    async fn get_signatures(&self) -> Result<Vec<Option<Signature>>, VybeDaemonError> {
         debug!("Getting signatures...");
         Ok(self
             .sdk_client
@@ -156,7 +156,7 @@ impl VybeTradeFillExtractor {
     /// join handles concurrently to try and be as fast as possible.
     async fn extract_fill_events(
         handles: Vec<JoinHandle<Option<Vec<PhoenixEvent>>>>,
-    ) -> Result<Vec<PhoenixEvent>, VybeTradeFillExtractorError> {
+    ) -> Result<Vec<PhoenixEvent>, VybeDaemonError> {
         let mut fill_events = Vec::new();
 
         // Create a stream that buffers up to N join handles concurrently.

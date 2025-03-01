@@ -7,7 +7,7 @@ use {
 
 /// All custom and 3rd party crate errors will be encapusulated here
 #[derive(Error, Debug)]
-pub enum VybeTradeFillExtractorError {
+pub enum VybeDaemonError {
     /// Address string is wrong size or invalid
     #[error(transparent)]
     ParsePubkey(#[from] ParsePubkeyError),
