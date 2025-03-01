@@ -27,6 +27,12 @@ use {
 /// Remote Procedure Call endpoint for Solana
 const HELIUS_RPC_ENDPOINT: &str = "https://mainnet.helius-rpc.com/?api-key=";
 
+/// The `get_signatures_for_address` endpoint should return 1000 signatures
+const NUM_EXPECTED_TRANSACTIONS: usize = 1000;
+
+/// Number of task threads we want to use when parsing transactions concurrently
+const NUM_TASK_THREADS: usize = 100;
+
 /// Wraps the Helium blochchain RPC service, and the Phoenix SDK onchain orderbook.
 #[derive(Getters)]
 pub struct VybeTradeFillExtractor {
@@ -100,7 +106,7 @@ impl VybeTradeFillExtractor {
     pub async fn run(&self) -> Result<(), VybeTradeFillExtractorError> {
         info!("Extracting new fill events...");
         let signatures = self.get_signatures().await?;
-        if signatures.len() < 1000 {
+        if signatures.len() < NUM_EXPECTED_TRANSACTIONS {
             warn!("Extracted {} signatures..", signatures.len());
         }
 
@@ -154,7 +160,7 @@ impl VybeTradeFillExtractor {
     }
 
     /// Extract fill events from each async handle.
-    /// Since 1000 is a pretty decent number let's use a stream that buffers around 100
+    /// Since 1000 is a decently sized number let's use a stream that buffers around 100
     /// join handles concurrently to try and be as fast as possible.
     async fn extract_fill_events(
         handles: Vec<JoinHandle<Option<Vec<PhoenixEvent>>>>,
@@ -162,7 +168,7 @@ impl VybeTradeFillExtractor {
         let mut fill_events = Vec::new();
 
         // Create a stream that buffers up to 100 join handles concurrently.
-        let mut stream = futures::stream::iter(handles).buffer_unordered(100);
+        let mut stream = futures::stream::iter(handles).buffer_unordered(NUM_TASK_THREADS);
 
         while let Some(join_result) = stream.next().await {
             let opt_events = join_result?;
