@@ -1,6 +1,6 @@
 [package]
-name = "vn-extractord-core"
-description = "Implements core functionality for the daemon service as a rust static library"
+name = "vn-database-conn"
+description = "Postgresql database connection crate"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,18 +10,11 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-vn-database-conn = { path = "../vn-database-conn" }
 thiserror.workspace = true
-tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 diesel.workspace = true
-futures = "0.3.31"
-phoenix-sdk = "0.8.0"
-solana-sdk = ">=1.14.12, <1.19"
-solana-client = ">=1.14.12, <1.19"
-ellipsis-client = "1.0.0"
-derive-getters = "0.5.0"
+dotenvy.workspace = true
 
 [dev-dependencies]
 cargo-husky.workspace = true

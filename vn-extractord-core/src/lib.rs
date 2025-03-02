@@ -1,10 +1,11 @@
 //! Crate to extract trade fill events from solana using the phoenix dex software development kit
 
-pub mod error;
+mod error;
+
+pub use error::VybeDaemonError;
 
 use {
     derive_getters::Getters,
-    error::VybeDaemonError,
     futures::StreamExt,
     phoenix_sdk::sdk_client::{MarketEventDetails, PhoenixEvent, SDKClient},
     solana_sdk::{pubkey::Pubkey, signature::Signature, signer::keypair::Keypair},

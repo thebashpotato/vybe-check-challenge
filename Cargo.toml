@@ -1,5 +1,5 @@
 [workspace]
-members = [ "vn-extractord-core","vn-extractord"]
+members = [ "vn-extractord-core","vn-extractord", "vn-database-conn"]
 resolver = "2"
 
 [workspace.package]
@@ -25,6 +25,8 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+diesel = { version = "2.2.0", features = ["postgres"] }
+dotenvy = "0.15"
 
 [profile.release]
 codegen-units = 1
@@ -117,3 +119,5 @@ unnested_or_patterns = { level = "allow", priority = 1 }
 similar_names = { level = "allow", priority = 1 }
 struct_field_names = { level = "allow", priority = 1 }
 use_debug = "allow"
+result_large_err = "allow"
+bool_assert_comparison = "allow"
