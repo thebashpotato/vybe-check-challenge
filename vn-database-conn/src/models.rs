@@ -1,11 +1,16 @@
 //! Diesel Models
 
-use diesel::prelude::*;
+use {
+    crate::VybeDatabaseError,
+    diesel::prelude::*,
+    phoenix_sdk::sdk_client::{MarketEventDetails, PhoenixEvent},
+    std::convert::TryFrom,
+};
 
 /// Represents a trade fill event as stored in the database.
 /// Used to read trade fill records
 #[allow(dead_code)]
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Eq, PartialEq)]
 #[diesel(table_name = crate::schema::trade_fills)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct TradeFill {
@@ -32,4 +37,19 @@ pub struct NewTradeFill {
     pub price_in_ticks: i64,
     /// The volume of the base token (in lots) that was filled in this trade event.
     pub base_lots_filled: i64,
+}
+
+impl TryFrom<PhoenixEvent> for NewTradeFill {
+    type Error = VybeDatabaseError;
+
+    fn try_from(event: PhoenixEvent) -> Result<Self, Self::Error> {
+        match event.details {
+            MarketEventDetails::Fill(fill) => Ok(NewTradeFill {
+                event_timestamp: event.timestamp,
+                price_in_ticks: fill.price_in_ticks as i64,
+                base_lots_filled: fill.base_lots_filled as i64,
+            }),
+            _ => Err(VybeDatabaseError::InvalidPhoenixEvent),
+        }
+    }
 }

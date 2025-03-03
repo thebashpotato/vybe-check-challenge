@@ -1,6 +1,9 @@
 //! Database connection errors
 
-use {diesel::ConnectionError, thiserror::Error};
+use {
+    diesel::{result::Error, ConnectionError},
+    thiserror::Error,
+};
 
 /// Encapsulate 3rd party and std lib errors for this crate
 #[derive(Error, Debug)]
@@ -11,4 +14,10 @@ pub enum VybeDatabaseError {
     /// Encapsulates Diesel database `diesel::ConnectionError`
     #[error(transparent)]
     Connection(#[from] ConnectionError),
+    /// Encapsulates the actual database errors from diesel
+    #[error(transparent)]
+    Diesel(#[from] Error),
+    /// Represents an unexpected `PhoenixEvent::MarketDetails::Fill` variant.
+    #[error("PhoenixEvent does not contain a Fill event")]
+    InvalidPhoenixEvent,
 }

@@ -62,7 +62,8 @@ async fn main() -> Result<()> {
 
     // Use the API key provided via the command line.
     let vfe =
-        VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS).await?;
+        &mut VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS)
+            .await?;
     loop {
         if let Err(e) = vfe.run().await {
             error!("{e}");

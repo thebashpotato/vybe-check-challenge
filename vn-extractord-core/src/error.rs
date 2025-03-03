@@ -3,6 +3,7 @@
 use {
     ellipsis_client::EllipsisClientError, solana_client::client_error::ClientError,
     solana_sdk::pubkey::ParsePubkeyError, thiserror::Error, tokio::task::JoinError,
+    vn_database_conn::VybeDatabaseError,
 };
 
 /// All custom and 3rd party crate errors will be encapusulated here
@@ -23,4 +24,7 @@ pub enum VybeDaemonError {
     /// Encapsulate tokio join errors
     #[error(transparent)]
     TokioJoin(#[from] JoinError),
+    /// Database connection errors
+    #[error(transparent)]
+    Database(#[from] VybeDatabaseError),
 }

@@ -6,13 +6,19 @@ fmt:
 lint:
     @cargo clippy --all-targets --all-features -- -D warnings
 
+# Run basic tests
 test:
-    @cargo test --workspace
+    @cargo test
+
+# Run integration tests (postgresql must be setup and running) WARNING! this clears the database afterwards
+itest:
+    @cargo test --features integration_tests && diesel migration redo
 
 # Clean the project
 clean:
     @cargo clean
 
+# Open Docs
 doc:
     @cargo doc --open
 

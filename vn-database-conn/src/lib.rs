@@ -3,12 +3,19 @@
 //! and used by the future rest api crate for reading.
 
 mod error;
-mod models;
-mod schema;
+pub mod models;
+pub mod schema;
 
 pub use error::VybeDatabaseError;
 
-use {diesel::prelude::*, dotenvy::dotenv, std::env};
+use {
+    diesel::prelude::*,
+    dotenvy::dotenv,
+    models::{NewTradeFill, TradeFill},
+    schema::trade_fills,
+    std::env,
+    tracing::debug,
+};
 
 /// Wraps the diesel pg database connection
 #[allow(dead_code)]
@@ -37,27 +44,52 @@ impl DatabaseConn {
     ///     Ok(conn) => {}
     ///     Err(e) => {}
     /// }
-    ///
     /// ```
     pub fn new() -> Result<Self, VybeDatabaseError> {
         dotenv().ok();
         match env::var("DATABASE_URL") {
             Ok(database_url) => {
                 let conn = PgConnection::establish(&database_url)?;
+                debug!("Established connection to {database_url}");
                 Ok(Self { conn })
             }
             Err(_) => Err(VybeDatabaseError::EnvVar),
         }
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::DatabaseConn;
+    /// Get a mutable reference to the underlying connection
+    pub fn conn(&mut self) -> &mut PgConnection {
+        &mut self.conn
+    }
 
-    #[test]
-    fn database_connection_test() {
-        let dbconn_res = DatabaseConn::new();
-        assert_eq!(dbconn_res.is_ok(), true);
+    /// Gets a trade fill by the id number
+    ///
+    /// # Errors
+    ///
+    /// `vn_database_conn::VybeDatabaseError::Diesel`
+    pub fn get_trade_fill_by_id(&mut self, id: i32) -> Result<Vec<TradeFill>, VybeDatabaseError> {
+        Ok(trade_fills::table
+            .filter(trade_fills::id.eq(id))
+            .limit(5)
+            .select(TradeFill::as_select())
+            .load(self.conn())?)
+    }
+
+    /// Create a new trade fill entry in the database
+    ///
+    /// # Params
+    ///
+    ///
+    /// # Errors
+    ///
+    /// `vn_database_conn::VybeDatabaseError::Diesel`
+    pub fn create_trade_fill(
+        &mut self,
+        new_trade_fill: &NewTradeFill,
+    ) -> Result<TradeFill, VybeDatabaseError> {
+        Ok(diesel::insert_into(trade_fills::table)
+            .values(new_trade_fill)
+            .returning(TradeFill::as_returning())
+            .get_result(self.conn())?)
     }
 }

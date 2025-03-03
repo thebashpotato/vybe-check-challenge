@@ -9,9 +9,10 @@ use {
     futures::StreamExt,
     phoenix_sdk::sdk_client::{MarketEventDetails, PhoenixEvent, SDKClient},
     solana_sdk::{pubkey::Pubkey, signature::Signature, signer::keypair::Keypair},
-    std::{str::FromStr, sync::Arc},
+    std::{convert::TryFrom, str::FromStr, sync::Arc},
     tokio::task::JoinHandle,
     tracing::{debug, error, info, warn},
+    vn_database_conn::DatabaseConn,
 };
 
 /// Remote Procedure Call endpoint for Solana
@@ -35,6 +36,8 @@ pub struct VybeTradeFillExtractor {
     market_pubkey: Pubkey,
     /// Atomically ref counted client
     sdk_client: Arc<SDKClient>,
+    /// PG database connection and interface
+    db: DatabaseConn,
 }
 
 impl VybeTradeFillExtractor {
@@ -83,6 +86,7 @@ impl VybeTradeFillExtractor {
                 url,
                 market_pubkey,
                 sdk_client: Arc::new(sdk_client),
+                db: DatabaseConn::new()?,
             }),
             Err(e) => Err(VybeDaemonError::PhoenixClient(e.to_string())),
         }
@@ -93,7 +97,7 @@ impl VybeTradeFillExtractor {
     /// # Errors
     ///
     /// `TxExtractorError::EllipsisClient`
-    pub async fn run(&self) -> VybeResult<()> {
+    pub async fn run(&mut self) -> VybeResult<()> {
         info!("Extracting new fill events...");
         let signatures = self.get_signatures().await?;
         if signatures.len() < NUM_EXPECTED_TRANSACTIONS {
@@ -106,7 +110,15 @@ impl VybeTradeFillExtractor {
         info!("Recieved {} fill event(s)", fill_events.len());
         if !fill_events.is_empty() {
             for fill_event in fill_events {
-                println!("{fill_event:#?}");
+                match self.db.create_trade_fill(&fill_event.try_into()?) {
+                    Ok(created) => {
+                        info!("Successfully created new trade fill entry..");
+                        println!("{created:#?}");
+                    }
+                    Err(e) => {
+                        error!("{e}");
+                    }
+                }
             }
         }
 
@@ -162,7 +174,6 @@ impl VybeTradeFillExtractor {
 
         // Create a stream that buffers up to N join handles concurrently.
         let mut stream = futures::stream::iter(handles).buffered(NUM_TASK_THREADS);
-
         while let Some(join_result) = stream.next().await {
             let opt_events = join_result?;
             if let Some(events) = opt_events {
@@ -173,7 +184,6 @@ impl VybeTradeFillExtractor {
                 }
             }
         }
-
         Ok(fill_events)
     }
 

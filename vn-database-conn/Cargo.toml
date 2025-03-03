@@ -1,6 +1,6 @@
 [package]
 name = "vn-database-conn"
-description = "Postgresql database connection crate"
+description = "Provides a shareable interface to Postgresql/Diesel powerered database"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,12 +9,16 @@ repository.workspace = true
 authors.workspace = true
 license.workspace = true
 
+[features]
+integration_tests = []
+
 [dependencies]
 thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 diesel.workspace = true
 dotenvy.workspace = true
+phoenix-sdk.workspace = true
 
 [dev-dependencies]
 cargo-husky.workspace = true
