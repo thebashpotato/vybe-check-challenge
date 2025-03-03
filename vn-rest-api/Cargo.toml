@@ -1,0 +1,23 @@
+[package]
+name = "vn-rest-api"
+description = "Restful api service to fetch (open high low close) data from our database"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+vn-database-core = { path = "../vn-database-core" }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+actix-web = "4"
+
+[lints]
+workspace = true

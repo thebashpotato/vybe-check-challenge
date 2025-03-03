@@ -12,9 +12,6 @@ use {
 #[derive(Parser)]
 #[command(author, version, about)]
 struct Args {
-    /// Fetch a database entry by its id
-    #[arg(short, long)]
-    id: i32,
     /// Log level (e.g., error, warn, info, debug, trace)
     #[arg(short, long, default_value = "info")]
     log_level: String,
@@ -35,7 +32,6 @@ fn main() -> Result<()> {
     // Parse command line arguments.
     let args = Args::parse();
     let level = convert_log_level(&args.log_level);
-    let trade_id = args.id;
 
     // Filter out the noise from 3rd party libraries
     let filter = EnvFilter::builder()
@@ -50,14 +46,15 @@ fn main() -> Result<()> {
     info!("Starting Vybe database test tool");
 
     match &mut VybeDatabase::new() {
-        Ok(db) => match db.get_trade_fill_by_id(trade_id) {
+        Ok(db) => match db.get_all_trade_fills() {
             Ok(trades) => {
                 if !trades.is_empty() {
+                    info!("Number of trade entries: {}", trades.len());
                     for trade in trades {
                         println!("{trade:#?}");
                     }
                 } else {
-                    warn!("No trade fill entry at id {trade_id}");
+                    warn!("No trade fills available");
                 }
             }
             Err(e) => {

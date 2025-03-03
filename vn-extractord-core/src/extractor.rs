@@ -52,7 +52,7 @@ impl VybeTradeFillExtractor {
         let market_pubkey = Pubkey::try_from(phoenix_addr)?;
         match SDKClient::new(&Keypair::new(), url.as_str()).await {
             Ok(sdk_client) => {
-                debug!("Connected to solana provider {url}");
+                debug!("Connected to solana provider {HELIUS_RPC_ENDPOINT}");
                 Ok(Self {
                     market_pubkey,
                     sdk_client: Arc::new(sdk_client),

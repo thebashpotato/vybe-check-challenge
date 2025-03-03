@@ -4,13 +4,14 @@ use {
     crate::VybeDatabaseError,
     diesel::prelude::*,
     phoenix_sdk::sdk_client::{MarketEventDetails, PhoenixEvent},
+    serde::Serialize,
     std::convert::TryFrom,
 };
 
 /// Represents a trade fill event as stored in the database.
 /// Used to read trade fill records
 #[allow(dead_code)]
-#[derive(Debug, Queryable, Selectable, Eq, PartialEq)]
+#[derive(Debug, Queryable, Selectable, Eq, PartialEq, Serialize, Clone)]
 #[diesel(table_name = crate::schema::trade_fills)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct TradeFill {

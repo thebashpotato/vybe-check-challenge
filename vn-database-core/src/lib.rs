@@ -18,7 +18,6 @@ use {
 };
 
 /// PG Database abstraction/interface
-#[allow(dead_code)]
 pub struct VybeDatabase {
     /// Connection to our db
     conn: PgConnection,
@@ -66,11 +65,22 @@ impl VybeDatabase {
     ///
     /// # Errors
     ///
-    /// `vn_database_core::VybeDatabaseError::Diesel`
+    /// `vn_database_core::VybeDatabaseError::Diesel` if the Diesel query fails
     pub fn get_trade_fill_by_id(&mut self, id: i32) -> Result<Vec<TradeFill>, VybeDatabaseError> {
         Ok(trade_fills::table
             .filter(trade_fills::id.eq(id))
             .limit(5)
+            .select(TradeFill::as_select())
+            .load(self.conn())?)
+    }
+
+    /// Gets all trade fill records from the database.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `VybeDatabaseError::Diesel` if the Diesel query fails.
+    pub fn get_all_trade_fills(&mut self) -> Result<Vec<TradeFill>, VybeDatabaseError> {
+        Ok(trade_fills::table
             .select(TradeFill::as_select())
             .load(self.conn())?)
     }
