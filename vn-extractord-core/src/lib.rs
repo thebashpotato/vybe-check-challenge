@@ -7,7 +7,7 @@ pub use error::VybeDaemonError;
 use {
     crate::extractor::{VybeResult, VybeTradeFillExtractor},
     tracing::{error, info},
-    vn_database_conn::DatabaseConn,
+    vn_database_core::VybeDatabase,
 };
 
 /// Top level interface
@@ -15,7 +15,7 @@ pub struct VybeDaemon {
     /// Phoenix sdk and Helius interface
     trade_fill_extractor: VybeTradeFillExtractor,
     /// PG database connection and interface
-    db: DatabaseConn,
+    db: VybeDatabase,
 }
 
 impl VybeDaemon {
@@ -37,7 +37,7 @@ impl VybeDaemon {
     pub async fn new(api_key: &str, phoenix_addr: &str) -> VybeResult<Self> {
         Ok(Self {
             trade_fill_extractor: VybeTradeFillExtractor::new(api_key, phoenix_addr).await?,
-            db: DatabaseConn::new()?,
+            db: VybeDatabase::new()?,
         })
     }
 

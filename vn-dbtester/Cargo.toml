@@ -10,7 +10,7 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-vn-database-conn = { path = "../vn-database-conn" }
+vn-database-core = { path = "../vn-database-core" }
 diesel.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true

@@ -5,22 +5,22 @@
 #![allow(clippy::unwrap_used)]
 
 #[cfg(feature = "integration_tests")]
-use vn_database_conn::{
+use vn_database_core::{
     models::{NewTradeFill, TradeFill},
-    DatabaseConn, VybeDatabaseError,
+    VybeDatabase, VybeDatabaseError,
 };
 
 #[cfg(feature = "integration_tests")]
 #[test]
 fn database_connection_test() {
-    let dbconn_res = DatabaseConn::new();
+    let dbconn_res = VybeDatabase::new();
     assert_eq!(dbconn_res.is_ok(), true);
 }
 
 #[cfg(feature = "integration_tests")]
 #[test]
 fn database_read_write_test() -> Result<(), VybeDatabaseError> {
-    let db = &mut DatabaseConn::new()?;
+    let db = &mut VybeDatabase::new()?;
     // Write Test
 
     let new_trade_fill = NewTradeFill {

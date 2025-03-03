@@ -3,7 +3,7 @@
 use {
     ellipsis_client::EllipsisClientError, solana_client::client_error::ClientError,
     solana_sdk::pubkey::ParsePubkeyError, thiserror::Error, tokio::task::JoinError,
-    vn_database_conn::VybeDatabaseError,
+    vn_database_core::VybeDatabaseError,
 };
 
 /// All custom and 3rd party crate errors will be encapusulated here

@@ -1,5 +1,5 @@
 [package]
-name = "vn-database-conn"
+name = "vn-database-core"
 description = "Provides a shareable interface to Postgresql/Diesel powerered database"
 version.workspace = true
 edition.workspace = true

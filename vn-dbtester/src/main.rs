@@ -5,7 +5,7 @@ use {
     clap::Parser,
     tracing::{error, info, warn, Level},
     tracing_subscriber::EnvFilter,
-    vn_database_conn::DatabaseConn,
+    vn_database_core::VybeDatabase,
 };
 
 /// Simple cli implementation
@@ -49,7 +49,7 @@ fn main() -> Result<()> {
 
     info!("Starting Vybe database test tool");
 
-    match &mut DatabaseConn::new() {
+    match &mut VybeDatabase::new() {
         Ok(db) => match db.get_trade_fill_by_id(trade_id) {
             Ok(trades) => {
                 if !trades.is_empty() {

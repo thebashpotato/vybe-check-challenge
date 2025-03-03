@@ -17,14 +17,14 @@ use {
     tracing::debug,
 };
 
-/// Wraps the diesel pg database connection
+/// PG Database abstraction/interface
 #[allow(dead_code)]
-pub struct DatabaseConn {
+pub struct VybeDatabase {
     /// Connection to our db
     conn: PgConnection,
 }
 
-impl DatabaseConn {
+impl VybeDatabase {
     /// Creates a new instance of the database connection,
     /// loads `DATABASE_URL` using dotenv from root .env file
     /// and immediately atttempts to connect.
@@ -32,15 +32,15 @@ impl DatabaseConn {
     ///
     /// # Errors
     ///
-    /// `vn_database_conn::VybeDatabaseError::EnvVar`
-    /// `vn_database_conn::VybeDatabaseError::Connection`
+    /// `vn_database_core::VybeDatabaseError::EnvVar`
+    /// `vn_database_core::VybeDatabaseError::Connection`
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use vn_database_conn::DatabaseConn;
+    /// use vn_database_core::VybeDatabase;
     ///
-    /// match DatabaseConn::new() {
+    /// match VybeDatabase::new() {
     ///     Ok(conn) => {}
     ///     Err(e) => {}
     /// }
@@ -66,7 +66,7 @@ impl DatabaseConn {
     ///
     /// # Errors
     ///
-    /// `vn_database_conn::VybeDatabaseError::Diesel`
+    /// `vn_database_core::VybeDatabaseError::Diesel`
     pub fn get_trade_fill_by_id(&mut self, id: i32) -> Result<Vec<TradeFill>, VybeDatabaseError> {
         Ok(trade_fills::table
             .filter(trade_fills::id.eq(id))
@@ -82,7 +82,7 @@ impl DatabaseConn {
     ///
     /// # Errors
     ///
-    /// `vn_database_conn::VybeDatabaseError::Diesel`
+    /// `vn_database_core::VybeDatabaseError::Diesel`
     pub fn create_trade_fill(
         &mut self,
         new_trade_fill: &NewTradeFill,

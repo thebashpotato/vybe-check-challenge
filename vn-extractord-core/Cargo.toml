@@ -10,7 +10,7 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-vn-database-conn = { path = "../vn-database-conn" }
+vn-database-core = { path = "../vn-database-core" }
 thiserror.workspace = true
 tokio.workspace = true
 tracing.workspace = true

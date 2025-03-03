@@ -1,5 +1,5 @@
 [workspace]
-members = [ "vn-extractord-core","vn-extractord", "vn-database-conn", "vn-dbtester"]
+members = [ "vn-extractord-core","vn-extractord", "vn-database-core", "vn-dbtester"]
 resolver = "2"
 
 [workspace.package]
