@@ -12,7 +12,7 @@ test:
 
 # Run integration tests (postgresql must be setup and running) WARNING! this clears the database afterwards
 itest:
-    @cargo test --features integration_tests && diesel migration redo
+    @diesel migration redo && cargo test --features integration_tests && diesel migration redo
 
 # Clean the project
 clean:

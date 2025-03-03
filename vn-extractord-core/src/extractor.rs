@@ -43,10 +43,6 @@ impl VybeTradeFillExtractor {
     /// # Errors
     ///
     /// `VybeDaemonError::Pubkey`
-    /// `VybeDaemonError::PhoenixClient`
-    /// `VybeDaemonError::EllipsisClient`
-    /// `VybeDaemonError::SolanaClient`
-    /// `VybeDaemonError::TokioJoin`
     ///
     /// # Returns
     ///
@@ -66,11 +62,19 @@ impl VybeTradeFillExtractor {
         }
     }
 
-    /// Extracts and returns Fill events
+    /// Extracts and returns Fill events, the fill events are sorted by
+    /// the `sequence_number`, but since Solana is a distributed system
+    /// this makes no gaurentee that fill events will be in order in the database,
+    /// we could wait until we have 10, or 20 fill events, then sort by sequence number
+    /// then write to the database, but then we get further and further away from real-time/near
+    /// real-time.
     ///
     /// # Errors
     ///
+    /// `VybeDaemonError::PhoenixClient`
     /// `VybeDaemonError::EllipsisClient`
+    /// `VybeDaemonError::SolanaClient`
+    /// `VybeDaemonError::TokioJoin`
     ///
     /// # Returns
     ///
@@ -83,12 +87,15 @@ impl VybeTradeFillExtractor {
         }
 
         let handles = self.build_event_handles(signatures);
-        let fill_events = Self::extract_fill_events(handles).await?;
+        let mut fill_events = Self::extract_fill_events(handles).await?;
 
         info!("Recieved {} fill event(s)", fill_events.len());
         if fill_events.is_empty() {
             Ok(None)
         } else {
+            if fill_events.len() > 1 {
+                fill_events.sort_by_key(|event| event.sequence_number);
+            }
             Ok(Some(fill_events))
         }
     }
