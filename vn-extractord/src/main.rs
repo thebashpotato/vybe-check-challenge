@@ -5,7 +5,7 @@ use {
     clap::Parser,
     tracing::{error, info, Level},
     tracing_subscriber::EnvFilter,
-    vn_extractord_core::VybeTradeFillExtractor,
+    vn_extractord_core::VybeDaemon,
 };
 
 /// Mainnet address of active SOL/USDC Market
@@ -58,23 +58,14 @@ async fn main() -> Result<()> {
         .compact()
         .init();
 
-    info!("Starting vybe-network extractor daemon");
+    let vdaemon =
+        &mut VybeDaemon::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS).await?;
 
-    // Use the API key provided via the command line.
-    let vfe =
-        &mut VybeTradeFillExtractor::new(args.api_key.as_str(), PHOENIX_SOLUSDC_MARKET_ADDRESS)
-            .await?;
-    loop {
-        if let Err(e) = vfe.run().await {
-            error!("{e}");
-            break;
-        }
-
-        // NOTE: this is a basic polling loop. If there are >1000 signatures in 200ms,
-        // events may get dropped.
-        tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
+    info!("Starting the vybe-network daemon");
+    if let Err(e) = vdaemon.run().await {
+        error!("{e}");
     }
+    info!("Shutting down vybe daemon");
 
-    info!("Shutting down vybe-network extractor daemon");
     Ok(())
 }
